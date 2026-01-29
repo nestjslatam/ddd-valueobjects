@@ -285,6 +285,31 @@ import { UserService } from './user.service';
 export class UserModule {}
 ```
 
+## Description and URL Options
+
+These value objects support customizable options that are merged with sensible defaults at creation time. Validators always derive the current options from the subject at validation time, and `create()` forces revalidation to apply merged options.
+
+- **Description**
+  - **Defaults**: `minLength = 10`, `maxLength = 500`, `allowEmpty = false`
+  - **Customizable**: `{ minLength?: number; maxLength?: number; allowEmpty?: boolean }`
+  - **Behavior**:
+    - Trims input
+    - If `allowEmpty` is `true`, empty/whitespace-only values are accepted; other rules are skipped
+    - Enforces min/max length on trimmed text
+    - Requires at least one alphanumeric character
+  - **Files**: [libs/ddd-valueobjects/src/implementations/description/description.value-object.ts](libs/ddd-valueobjects/src/implementations/description/description.value-object.ts), [libs/ddd-valueobjects/src/implementations/description/description.validator.ts](libs/ddd-valueobjects/src/implementations/description/description.validator.ts)
+
+- **Url**
+  - **Defaults**: `requireProtocol = true`, `allowedProtocols = ['http', 'https']`
+  - **Customizable**: `{ requireProtocol?: boolean; allowedProtocols?: string[] }`
+  - **Behavior**:
+    - If `requireProtocol` is `true`, validates via `URL` parsing, protocol presence, allowed protocol list, and domain format
+    - If `requireProtocol` is `false`, accepts bare domains (e.g., `example.com`) and validates format; if a protocol is present, it must be in `allowedProtocols`
+    - Enforces maximum length from `URL_CONSTRAINTS`
+  - **Files**: [libs/ddd-valueobjects/src/implementations/url/url.value-object.ts](libs/ddd-valueobjects/src/implementations/url/url.value-object.ts), [libs/ddd-valueobjects/src/implementations/url/url.validator.ts](libs/ddd-valueobjects/src/implementations/url/url.validator.ts)
+
+On error, `create()` throws with a detailed message including broken rules to aid diagnostics.
+
 ## Result Pattern
 
 The Result pattern helps handle errors functionally without throwing exceptions:
