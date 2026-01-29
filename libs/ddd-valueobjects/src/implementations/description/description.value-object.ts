@@ -17,17 +17,26 @@ export class Description extends DddValueObject<string> {
     private readonly options?: Partial<DescriptionOptions>,
   ) {
     super(value);
-    this.addValidators();
+    // After base added default validator, update it to merged options
+    const validator = this.validatorRules.findByType(DescriptionValidator) as
+      | DescriptionValidator
+      | undefined;
+    if (validator) {
+      validator.updateOptions(this.getOptions());
+    } else {
+      this.addValidators();
+    }
   }
 
   /**
    * Creates a new Description with validation
    */
   static create(value: string, options?: Partial<DescriptionOptions>): Description {
-    const description = new Description(value?.trim() || '', options);
-
+    const description = new Description(value?.trim() ?? '', options);
+    // Force revalidation now that options are set
+    description.setValuePropertyChanged(description.getValue(), 'internalValue', true);
     if (!description.isValid) {
-      throw new Error('Invalid Description');
+      throw new Error(`Invalid Description: ${description.brokenRules.getBrokenRulesAsString()}`);
     }
     return description;
   }
@@ -43,12 +52,7 @@ export class Description extends DddValueObject<string> {
    * Creates an empty description (only if allowEmpty is true)
    */
   static empty(options?: Partial<DescriptionOptions>): Description {
-    const fullOptions: DescriptionOptions = {
-      minLength: options?.minLength ?? 10,
-      maxLength: options?.maxLength ?? 500,
-      allowEmpty: true, // Force allowEmpty to true
-    };
-    return Description.create('', fullOptions);
+    return Description.create('', { ...options, allowEmpty: true });
   }
 
   get length(): number {
@@ -84,7 +88,10 @@ export class Description extends DddValueObject<string> {
   }
 
   public addValidators(): void {
-    this.validatorRules.add(new DescriptionValidator(this, this.getOptions()));
+    // Add with defaults; will be updated in constructor with actual merged options
+    this.validatorRules.add(
+      new DescriptionValidator(this, { minLength: 10, maxLength: 500, allowEmpty: false }),
+    );
   }
 
   protected getEqualityComponents(): Iterable<any> {

@@ -16,7 +16,13 @@ export class Url extends DddValueObject<string> {
     private readonly options?: Partial<UrlOptions>,
   ) {
     super(value);
-    this.addValidators();
+    // After base added default validator, update it to merged options
+    const validator = this.validatorRules.findByType(UrlValidator) as UrlValidator | undefined;
+    if (validator) {
+      validator.updateOptions(this.getOptions());
+    } else {
+      this.addValidators();
+    }
   }
 
   /**
@@ -24,7 +30,8 @@ export class Url extends DddValueObject<string> {
    */
   static create(value: string, options?: Partial<UrlOptions>): Url {
     const url = new Url(value?.trim() || '', options);
-
+    // Force revalidation now that options are set
+    url.setValuePropertyChanged(url.getValue(), 'internalValue', true);
     if (!url.isValid) {
       throw new Error(`Invalid URL: ${url.brokenRules.getBrokenRulesAsString()}`);
     }
@@ -103,7 +110,10 @@ export class Url extends DddValueObject<string> {
   }
 
   public addValidators(): void {
-    this.validatorRules.add(new UrlValidator(this, this.getOptions()));
+    // Add with defaults; will be updated in constructor with actual merged options
+    this.validatorRules.add(
+      new UrlValidator(this, { requireProtocol: true, allowedProtocols: ['http', 'https'] }),
+    );
   }
 
   protected getEqualityComponents(): Iterable<any> {

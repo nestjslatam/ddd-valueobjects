@@ -11,15 +11,20 @@ interface UrlOptions {
  * Validator for URL Value Object
  */
 export class UrlValidator extends AbstractRuleValidator<Url> {
-  private readonly options: UrlOptions;
+  private options: UrlOptions;
 
   constructor(subject: Url, options: UrlOptions) {
     super(subject);
     this.options = options;
   }
 
+  updateOptions(options: UrlOptions): void {
+    this.options = options;
+  }
+
   addRules(): void {
     const value = this.subject.getValue();
+    const options = this.subject.getOptions();
 
     // Empty validation
     if (!value || value.trim().length === 0) {
@@ -28,7 +33,7 @@ export class UrlValidator extends AbstractRuleValidator<Url> {
     }
 
     // URL format validation
-    if (this.options.requireProtocol) {
+    if (options.requireProtocol) {
       try {
         const url = new URL(value);
 
@@ -38,10 +43,10 @@ export class UrlValidator extends AbstractRuleValidator<Url> {
           this.addBrokenRule('value', 'URL must include a protocol (e.g., https://)');
         }
 
-        if (protocol && !this.options.allowedProtocols.includes(protocol)) {
+        if (protocol && !options.allowedProtocols.includes(protocol)) {
           this.addBrokenRule(
             'value',
-            `URL protocol must be one of: ${this.options.allowedProtocols.join(
+            `URL protocol must be one of: ${options.allowedProtocols.join(
               ', ',
             )} (got: ${protocol})`,
           );
@@ -65,10 +70,10 @@ export class UrlValidator extends AbstractRuleValidator<Url> {
           const url = new URL(value);
           const protocol = url.protocol.replace(':', '');
 
-          if (protocol && !this.options.allowedProtocols.includes(protocol)) {
+          if (protocol && !options.allowedProtocols.includes(protocol)) {
             this.addBrokenRule(
               'value',
-              `URL protocol must be one of: ${this.options.allowedProtocols.join(
+              `URL protocol must be one of: ${options.allowedProtocols.join(
                 ', ',
               )} (got: ${protocol})`,
             );

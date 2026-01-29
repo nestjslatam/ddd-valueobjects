@@ -11,41 +11,46 @@ interface DescriptionOptions {
  * Validator for Description Value Object
  */
 export class DescriptionValidator extends AbstractRuleValidator<Description> {
-  private readonly options: DescriptionOptions;
+  private options: DescriptionOptions;
 
   constructor(subject: Description, options: DescriptionOptions) {
     super(subject);
     this.options = options;
   }
 
+  updateOptions(options: DescriptionOptions): void {
+    this.options = options;
+  }
+
   addRules(): void {
     const value = this.subject.getValue();
     const trimmedValue = value?.trim() || '';
+    const options = this.subject.getOptions();
 
     // Empty validation
-    if (!this.options.allowEmpty && trimmedValue.length === 0) {
+    if (!options.allowEmpty && trimmedValue.length === 0) {
       this.addBrokenRule('value', 'Description cannot be empty');
       return;
     }
 
     // Skip other validations if empty is allowed and value is empty
-    if (this.options.allowEmpty && trimmedValue.length === 0) {
+    if (options.allowEmpty && trimmedValue.length === 0) {
       return;
     }
 
     // Min length validation
-    if (trimmedValue.length < this.options.minLength) {
+    if (trimmedValue.length < options.minLength) {
       this.addBrokenRule(
         'value',
-        `Description must be at least ${this.options.minLength} characters (current: ${trimmedValue.length})`,
+        `Description must be at least ${options.minLength} characters (current: ${trimmedValue.length})`,
       );
     }
 
     // Max length validation
-    if (trimmedValue.length > this.options.maxLength) {
+    if (trimmedValue.length > options.maxLength) {
       this.addBrokenRule(
         'value',
-        `Description cannot exceed ${this.options.maxLength} characters (current: ${trimmedValue.length})`,
+        `Description cannot exceed ${options.maxLength} characters (current: ${trimmedValue.length})`,
       );
     }
     if (!/[a-zA-Z0-9]/.test(trimmedValue)) {
