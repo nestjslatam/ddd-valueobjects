@@ -14,9 +14,11 @@ describe('ExampleAppController', () => {
     exampleAppController = app.get<ExampleAppController>(ExampleAppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(exampleAppController.getHello()).toBe('Hello World!');
+  describe('getInfo', () => {
+    it('should return application information', () => {
+      const info = exampleAppController.getInfo();
+      expect(info).toBeDefined();
+      expect(info.name).toContain('Example App');
     });
   });
 });

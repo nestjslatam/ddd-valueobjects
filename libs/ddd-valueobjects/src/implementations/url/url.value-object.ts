@@ -11,25 +11,19 @@ interface UrlOptions {
  * Represents a valid URL with protocol and domain validation
  */
 export class Url extends DddValueObject<string> {
-  private readonly options: UrlOptions;
-
-  private constructor(value: string, options: UrlOptions) {
+  private constructor(
+    value: string,
+    private readonly options?: Partial<UrlOptions>,
+  ) {
     super(value);
-    this.options = options;
+    this.addValidators();
   }
 
   /**
    * Creates a new URL with validation
    */
   static create(value: string, options?: Partial<UrlOptions>): Url {
-    const fullOptions: UrlOptions = {
-      requireProtocol: options?.requireProtocol ?? true,
-      allowedProtocols: options?.allowedProtocols ?? ['http', 'https'],
-    };
-    const url = new Url(value?.trim() || '', fullOptions);
-
-    // Ensure validators are added with correct options
-    url.addValidators();
+    const url = new Url(value?.trim() || '', options);
 
     if (!url.isValid) {
       throw new Error(`Invalid URL: ${url.brokenRules.getBrokenRulesAsString()}`);
@@ -42,16 +36,14 @@ export class Url extends DddValueObject<string> {
    * Loads a URL from persisted data
    */
   static load(value: string, options?: Partial<UrlOptions>): Url {
-    const fullOptions: UrlOptions = {
-      requireProtocol: options?.requireProtocol ?? true,
-      allowedProtocols: options?.allowedProtocols ?? ['http', 'https'],
-    };
-    return new Url(value, fullOptions);
+    return new Url(value, options);
   }
 
   getOptions(): UrlOptions {
-    // Return defaults if options not yet initialized (during construction)
-    return this.options || { requireProtocol: true, allowedProtocols: ['http', 'https'] };
+    return {
+      requireProtocol: this.options?.requireProtocol ?? true,
+      allowedProtocols: this.options?.allowedProtocols ?? ['http', 'https'],
+    };
   }
 
   /**
@@ -110,8 +102,8 @@ export class Url extends DddValueObject<string> {
     return this.getProtocol() === 'https';
   }
 
-  addValidators(): void {
-    this.validatorRules.add(new UrlValidator(this));
+  public addValidators(): void {
+    this.validatorRules.add(new UrlValidator(this, this.getOptions()));
   }
 
   protected getEqualityComponents(): Iterable<any> {

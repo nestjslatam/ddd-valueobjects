@@ -12,31 +12,23 @@ interface DescriptionOptions {
  * Represents a text description with length constraints
  */
 export class Description extends DddValueObject<string> {
-  private readonly options: DescriptionOptions;
-
-  private constructor(value: string, options: DescriptionOptions) {
+  private constructor(
+    value: string,
+    private readonly options?: Partial<DescriptionOptions>,
+  ) {
     super(value);
-    this.options = options;
+    this.addValidators();
   }
 
   /**
    * Creates a new Description with validation
    */
   static create(value: string, options?: Partial<DescriptionOptions>): Description {
-    const fullOptions: DescriptionOptions = {
-      minLength: options?.minLength ?? 10,
-      maxLength: options?.maxLength ?? 500,
-      allowEmpty: options?.allowEmpty ?? false,
-    };
-    const description = new Description(value?.trim() || '', fullOptions);
-
-    // Ensure validators are added with correct options
-    description.addValidators();
+    const description = new Description(value?.trim() || '', options);
 
     if (!description.isValid) {
-      throw new Error(`Invalid Description: ${description.brokenRules.getBrokenRulesAsString()}`);
+      throw new Error('Invalid Description');
     }
-
     return description;
   }
 
@@ -44,12 +36,7 @@ export class Description extends DddValueObject<string> {
    * Loads a Description from persisted data
    */
   static load(value: string, options?: Partial<DescriptionOptions>): Description {
-    const fullOptions: DescriptionOptions = {
-      minLength: options?.minLength ?? 10,
-      maxLength: options?.maxLength ?? 500,
-      allowEmpty: options?.allowEmpty ?? false,
-    };
-    return new Description(value, fullOptions);
+    return new Description(value, options);
   }
 
   /**
@@ -69,8 +56,11 @@ export class Description extends DddValueObject<string> {
   }
 
   getOptions(): DescriptionOptions {
-    // Return defaults if options not yet initialized (during construction)
-    return this.options || { minLength: 10, maxLength: 500, allowEmpty: false };
+    return {
+      minLength: this.options?.minLength ?? 10,
+      maxLength: this.options?.maxLength ?? 500,
+      allowEmpty: this.options?.allowEmpty ?? false,
+    };
   }
 
   isEmpty(): boolean {
@@ -93,8 +83,8 @@ export class Description extends DddValueObject<string> {
     return this.getValue().trim().split(/\s+/).length;
   }
 
-  addValidators(): void {
-    this.validatorRules.add(new DescriptionValidator(this));
+  public addValidators(): void {
+    this.validatorRules.add(new DescriptionValidator(this, this.getOptions()));
   }
 
   protected getEqualityComponents(): Iterable<any> {
