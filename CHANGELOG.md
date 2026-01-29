@@ -1,9 +1,15 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### 1.0.1 (2026-01-29)
+
+
+### Bug Fixes
+
+* **config:** resolve husky and eslint path issues ([232a7ef](https://github.com/nestjslatam/ddd-valueobjects/commit/232a7ef2e3c9a08de454cc0b3336f50b8c43b394))
+* resolve test failures in value objects ([4cdf1b0](https://github.com/nestjslatam/ddd-valueobjects/commit/4cdf1b05c7c4c92023721fec0d30918ac4cb30c8))
+* **value-objects:** force revalidation in create() for Description and Url ([ffe47ae](https://github.com/nestjslatam/ddd-valueobjects/commit/ffe47aea2f7319297fdac072053cfd02e3cde538))
 
 ## [1.0.0] - 2026-01-29
 
