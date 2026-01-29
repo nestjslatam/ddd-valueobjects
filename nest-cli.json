@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/nestjslatam-ddd-valueobjects/libs/ddd-valueobjects/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/nestjslatam-ddd-valueobjects/tsconfig.app.json"
+  },
+  "projects": {
+    "ddd-valueobjects": {
+      "type": "library",
+      "root": "libs/ddd-valueobjects",
+      "entryFile": "index",
+      "sourceRoot": "libs/ddd-valueobjects/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/ddd-valueobjects/tsconfig.lib.json"
+      }
+    },
+    "example-app": {
+      "type": "application",
+      "root": "apps/example-app",
+      "entryFile": "main",
+      "sourceRoot": "apps/example-app/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/example-app/tsconfig.app.json"
+      }
+    },
+    "nestjslatam-ddd-valueobjects": {
+      "type": "application",
+      "root": "apps/nestjslatam-ddd-valueobjects",
+      "entryFile": "main",
+      "sourceRoot": "apps/nestjslatam-ddd-valueobjects/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/nestjslatam-ddd-valueobjects/tsconfig.app.json"
+      }
+    }
+  },
+  "monorepo": true,
+  "root": "apps/nestjslatam-ddd-valueobjects"
+}
