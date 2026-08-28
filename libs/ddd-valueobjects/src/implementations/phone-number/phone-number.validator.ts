@@ -52,7 +52,7 @@ export class PhoneNumberValidator extends AbstractRuleValidator<PhoneNumber> {
     }
 
     // Format validation - allow digits, spaces, parentheses, dashes, plus
-    if (!/^[\d\s\-\(\)\+]+$/.test(value)) {
+    if (!/^[\d\s\-()+]+$/.test(value)) {
       this.addBrokenRule('value', 'Phone number contains invalid characters');
     }
 
