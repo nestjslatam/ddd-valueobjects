@@ -19,8 +19,7 @@ export class Description extends DddValueObject<string> {
     super(value);
     // After base added default validator, update it to merged options
     const validator = this.validatorRules.findByType(DescriptionValidator) as
-      | DescriptionValidator
-      | undefined;
+      DescriptionValidator | undefined;
     if (validator) {
       validator.updateOptions(this.getOptions());
     } else {
