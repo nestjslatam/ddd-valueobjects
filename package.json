@@ -1,6 +1,6 @@
 {
   "name": "@nestjslatam/ddd-valueobjects",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Domain-Driven Design Value Objects library for NestJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
