@@ -183,6 +183,9 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
 
 `npm run build` uses `nest build`, which bundles with webpack and **emits no declarations** — not publishable. `npm run build:lib` compiles with `tsc` and derives the published manifest, and the package is published from `dist/libs/ddd-valueobjects` so subpath imports resolve without an `exports` map.
 
+> [!TIP]
+> **[The CLI's full guide →](https://github.com/nestjslatam/ddd-cli/blob/main/docs/GUIDE.md)** — every command and flag, walked through by building a complete domain from nothing into ten type-checking files. Worth reading even if you never install the CLI: it is the clearest write-up of this library's idiom anywhere, because every claim in it was produced by running the tool.
+
 ## Who is behind this
 
 Built and maintained by **[BeyondNet Tech](https://beyondnet.info/)** with the [NestJS Latam](https://nestjslatam.dev/) community.
