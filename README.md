@@ -2,14 +2,16 @@
 
 # `@nestjslatam/ddd-valueobjects`
 
-**Twelve ready-made value objects for [`@nestjslatam/ddd-lib`](https://github.com/nestjslatam/ddd)** — email, money, phone, document IDs, dates and more, each with its rules, formatters and equality already written.
+**Doce value objects ya hechos para [`@nestjslatam/ddd-lib`](https://github.com/nestjslatam/ddd)** — email, dinero, teléfono, documentos de identidad, fechas y más, cada uno con sus reglas, sus formateadores y su igualdad ya escritos.
 
 [![npm](https://img.shields.io/npm/v/%40nestjslatam%2Fddd-valueobjects?color=1e73be&label=ddd-valueobjects)](https://www.npmjs.com/package/@nestjslatam/ddd-valueobjects)
 [![CI](https://github.com/nestjslatam/ddd-valueobjects/actions/workflows/ci.yml/badge.svg)](https://github.com/nestjslatam/ddd-valueobjects/actions/workflows/ci.yml)
-[![tests](https://img.shields.io/badge/tests-681%20passing-00d084)](#tests)
-[![license](https://img.shields.io/badge/license-MIT-575760)](LICENSE)
+[![tests](https://img.shields.io/badge/pruebas-681%20pasando-00d084)](#pruebas)
+[![license](https://img.shields.io/badge/licencia-MIT-575760)](LICENSE)
 
-[Quick start](#quick-start) · [What is in the box](#what-is-in-the-box) · [FAQ](#faq) · [Contributing](#contributing)
+[Inicio rápido](#inicio-rápido) · [Qué trae](#qué-trae) · [Preguntas frecuentes](#preguntas-frecuentes) · [Colaborar](#colaborar)
+
+**[📖 Catálogo completo en docs.nestjslatam.dev](https://docs.nestjslatam.dev/valueobjects/)**
 
 </div>
 
@@ -19,12 +21,12 @@
 npm install @nestjslatam/ddd-valueobjects @nestjslatam/ddd-lib
 ```
 
-## Quick start
+## Inicio rápido
 
 ```ts
 import { Money, MoneyFormatter, Email, BirthDate, DocumentId } from '@nestjslatam/ddd-valueobjects';
 
-// Most value objects throw on invalid input.
+// La mayoría lanza ante una entrada inválida.
 const price = Money.create(1999, 'USD');
 new MoneyFormatter().format(price); // '$1,999.00'
 
@@ -32,37 +34,37 @@ Money.create(10, 'XYZ');
 // Invalid Money: Property: currency, Message: Currency code 'XYZ' is not
 // a commonly recognized ISO 4217 code
 
-// Email and UUID are the two that return a Result instead of throwing.
+// Email y UUID son los dos que devuelven un Result en lugar de lanzar.
 const email = Email.create('ada@example.com');
-email.isSuccess; // true
-email.getValue().getValue(); // 'ada@example.com'
+email.isSuccess;               // true
+email.getValue().getValue();   // 'ada@example.com'
 
-Email.create('not-an-email').getError(); // 'Email format is invalid'
+Email.create('no-es-un-email').getError(); // 'Email format is invalid'
 
-// Anything that depends on "now" takes an optional reference date.
+// Todo lo que dependa de «ahora» acepta una fecha de referencia opcional.
 BirthDate.create(new Date('1990-06-15')).getAge(new Date('2026-08-28')); // 36
 
 DocumentId.create('12345678', 'DNI', 'PE').getValue();
 // { value: '12345678', type: 'DNI', country: 'PE' }
 ```
 
-That reference-date parameter is the detail worth stealing even if you write your own: `getAge`, `isMinor`, `isAdult`, `getNextBirthday`, `getDaysUntilBirthday` and `isBirthdayToday` all accept one, so their behaviour is testable without freezing the clock.
+Ese parámetro de fecha de referencia es el detalle que merece la pena copiar aunque escribas los tuyos: `getAge`, `isMinor`, `isAdult`, `getNextBirthday`, `getDaysUntilBirthday` e `isBirthdayToday` lo aceptan todos, así que su comportamiento se puede probar **sin congelar el reloj**.
 
-## What is in the box
+## Qué trae
 
-|                        |                                                                    |
-| ---------------------- | ------------------------------------------------------------------ |
-| **Identity & contact** | `Email`, `PhoneNumber`, `Url`, `UUID`, `Name`                      |
-| **Money & numbers**    | `Money`, `Percentage`                                              |
-| **Time**               | `BirthDate`, `DateRange`, `Age`                                    |
-| **Documents**          | `DocumentId` — DNI, passport, driver's licence, SSN, tax ID, other |
-| **Text**               | `Description`                                                      |
+|                          |                                                                        |
+| ------------------------ | ---------------------------------------------------------------------- |
+| **Identidad y contacto** | `Email`, `PhoneNumber`, `Url`, `UUID`, `Name`                          |
+| **Dinero y números**     | `Money`, `Percentage`                                                  |
+| **Tiempo**               | `BirthDate`, `DateRange`, `Age`                                        |
+| **Documentos**           | `DocumentId` — DNI, pasaporte, licencia de conducir, SSN, RUC, y otros |
+| **Texto**                | `Description`                                                          |
 
-Plus formatters (`MoneyFormatter` alone has `format`, `formatWithoutSymbol`, `formatWithCode`, `formatAccounting`, `formatCompact` and `formatAsWords`), and services — `ZodiacCalculatorService` scores compatibility between two signs, `BirthdayCalendarService` finds upcoming birthdays and milestones.
+Más los formateadores (`MoneyFormatter` por sí solo tiene `format`, `formatWithoutSymbol`, `formatWithCode`, `formatAccounting`, `formatCompact` y `formatAsWords`), y servicios: `ZodiacCalculatorService` puntúa la compatibilidad entre dos signos y `BirthdayCalendarService` encuentra cumpleaños próximos y efemérides.
 
-### Document validation is pluggable
+### La validación de documentos es enchufable
 
-`DocumentId` dispatches to a strategy per document type, and the registry is open:
+`DocumentId` delega en una estrategia por tipo de documento, y el registro está abierto:
 
 ```ts
 class PeruvianDni implements IDocumentValidatorStrategy {
@@ -75,7 +77,7 @@ class PeruvianDni implements IDocumentValidatorStrategy {
   validate(value: string) {
     const errors = /^\d{8}$/.test(value)
       ? []
-      : [{ field: 'value', message: 'A Peruvian DNI is 8 digits' }];
+      : [{ field: 'value', message: 'Un DNI peruano tiene 8 dígitos' }];
     return { isValid: errors.length === 0, errors };
   }
 }
@@ -85,11 +87,11 @@ DocumentValidatorRegistry.getRegisteredTypes();
 // ['DNI', 'PASSPORT', 'SSN', 'TAX_ID', 'DRIVER_LICENSE', 'OTHER']
 ```
 
-The strategy carries its own `type`, so registering it replaces the built-in rules for that document type. Six strategies ship. Writing one for a country whose format you actually live with is the easiest useful contribution here.
+La estrategia lleva su propio `type`, así que registrarla **sustituye** las reglas incorporadas para ese tipo de documento. Vienen seis. Escribir una para un país cuyo formato usas a diario es la contribución útil más fácil de este repositorio.
 
-## Requirements
+## Requisitos
 
-Node `>=20.11`, and **`@nestjslatam/ddd-lib` as a peer** — you install it yourself:
+Node `>=20.11`, y **`@nestjslatam/ddd-lib` como dependencia par** — la instalas tú:
 
 ```
 @nestjslatam/ddd-lib  ^2.0.0 || ^3.0.0 || ^4.0.0
@@ -100,113 +102,115 @@ rxjs                  ^7.2.0
 ```
 
 > [!IMPORTANT]
-> **`1.1.0` and earlier declared `ddd-lib` as a regular dependency**, so installing them beside `ddd-lib@3.0.0` gave you _two copies_:
+> **La `1.1.0` y anteriores declaraban `ddd-lib` como dependencia normal**, así que instalarlas junto a `ddd-lib@3.0.0` te dejaba **dos copias**:
 >
 > ```
 > @nestjslatam/ddd-lib                                3.0.0   isValid -> getter
-> @nestjslatam/ddd-valueobjects/node_modules/ddd-lib  2.1.2   isValid -> method
+> @nestjslatam/ddd-valueobjects/node_modules/ddd-lib  2.1.2   isValid -> método
 > ```
 >
-> Two class identities, two shapes, and `instanceof` failing across them. It is a peer dependency from `1.2.0` on, which resolves to your single copy. Upgrade if you are on `1.1.0` or earlier and using `ddd-lib` 3.x.
+> Dos identidades de clase, dos formas, y un `instanceof` que falla entre ellas. Desde la `1.2.0` es dependencia par, que resuelve a tu única copia. Actualiza si estás en la `1.1.0` o anterior y usas `ddd-lib` 3.x.
 
-## Tests
+## Pruebas
 
 ```bash
 npm install
-npm test        # 32 suites, 681 tests, ~15s
+npm test        # 32 suites, 681 pruebas, ~15s
 ```
 
-They pass on a clean checkout, and the release pipeline goes further: it packs the tarball, installs it into an empty scratch project with **nothing hand-installed**, and `require()`s it under `node --no-experimental-require-module`. That flag matters — modern Node loads ESM through `require()` transparently, which hides ESM-only dependencies that break real CommonJS consumers. A sibling package shipped exactly that bug and nobody noticed until it was published.
+Pasan en un clon limpio, y el pipeline de publicación va más allá: empaqueta el tarball, lo instala en un proyecto vacío **sin nada puesto a mano** y lo carga con `require()` bajo `node --no-experimental-require-module`.
 
-## FAQ
+Esa opción importa. Node moderno carga ESM a través de `require()` de forma transparente, lo que **esconde** las dependencias sólo-ESM que rompen a los consumidores CommonJS de verdad. Un paquete hermano publicó exactamente ese bug y nadie se enteró hasta que estaba en npm.
+
+## Preguntas frecuentes
 
 <details>
-<summary><b>Four <code>@nestjslatam</code> packages — which do I need?</b></summary>
+<summary><b>Cuatro paquetes <code>@nestjslatam</code>, ¿cuál necesito?</b></summary>
 
-[`ddd-lib`](https://github.com/nestjslatam/ddd) is required; it is the library everything else builds on. **This package is optional** — it saves you writing `Email`, `Money` and friends by hand. [`ddd-cli`](https://github.com/nestjslatam/ddd-cli) is a dev tool. [`ddd-es-lib`](https://github.com/nestjslatam/ddd-event-sourcing) is for event sourcing on MongoDB.
+[`ddd-lib`](https://github.com/nestjslatam/ddd) es obligatorio; es la librería sobre la que se apoya todo lo demás. **Este paquete es opcional** — te ahorra escribir `Email`, `Money` y compañía a mano. [`ddd-cli`](https://github.com/nestjslatam/ddd-cli) es una herramienta de desarrollo. [`ddd-es-lib`](https://github.com/nestjslatam/ddd-event-sourcing) es para event sourcing sobre MongoDB.
 </details>
 
 <details>
-<summary><b>Does it work with the current <code>ddd-lib</code>?</b></summary>
+<summary><b>¿Funciona con el <code>ddd-lib</code> actual?</b></summary>
 
-Yes. The peer range is `^2.0.0 || ^3.0.0 || ^4.0.0`, and the full 681-test suite was re-run against each new major **before** the range was widened — for `4.0.0` that meant packing its tarball locally and testing against it before it was published. On `1.1.0` or earlier, see the warning in [Requirements](#requirements) — you will silently get two copies of the library.
+Sí. El rango par es `^2.0.0 || ^3.0.0 || ^4.0.0`, y las 681 pruebas se volvieron a ejecutar contra cada nueva versión mayor **antes** de ampliar el rango — para la `4.0.0` eso significó empaquetar su tarball en local y probar contra él antes de que se publicara. En la `1.1.0` o anterior, mira el aviso de [Requisitos](#requisitos): te llevarás dos copias de la librería sin enterarte.
 </details>
 
 <details>
-<summary><b>Why does <code>Email.create()</code> return something different from <code>Money.create()</code>?</b></summary>
+<summary><b>¿Por qué <code>Email.create()</code> devuelve algo distinto de <code>Money.create()</code>?</b></summary>
 
-History, not design. `Email` and `UUID` are the two that return a `Result`; everything else throws on invalid input. Unifying them is a breaking change nobody has taken yet — it is [on the list](#contributing).
+Historia, no diseño. `Email` y `UUID` son los dos que devuelven un `Result`; todo lo demás lanza ante una entrada inválida. Unificarlos es un cambio incompatible que nadie ha acometido todavía — está [en la lista](#colaborar).
 </details>
 
 <details>
-<summary><b><code>Money.create()</code> rejects my currency code. Bug?</b></summary>
+<summary><b><code>Money.create()</code> rechaza mi código de moneda. ¿Es un bug?</b></summary>
 
-Probably not — it validates against commonly recognised ISO 4217 codes and rejects anything else with a message naming the code. If a legitimate code is missing, that is a one-line fix and a welcome PR.
+Probablemente no — valida contra los códigos ISO 4217 de uso común y rechaza el resto con un mensaje que nombra el código. Si falta uno legítimo, es un arreglo de una línea y un PR bienvenido.
 </details>
 
 <details>
-<summary><b>I could write an <code>Email</code> class myself. What does this buy me?</b></summary>
+<summary><b>Podría escribir yo una clase <code>Email</code>. ¿Qué me aporta esto?</b></summary>
 
-For `Email`, mostly the tests. The ones that earn their keep are the ones with real surface area: `Money` with six formatters and ISO 4217 validation, `DocumentId` with six pluggable country strategies, `BirthDate` and `DateRange` with the reference-date discipline, and `PhoneNumber`. Wiring cost is one import — they are ordinary `ddd-lib` value objects.
+Para `Email`, sobre todo las pruebas. Los que se ganan el sitio son los que tienen superficie de verdad: `Money` con seis formateadores y validación ISO 4217, `DocumentId` con seis estrategias de país enchufables, `BirthDate` y `DateRange` con la disciplina de la fecha de referencia, y `PhoneNumber`. El coste de integración es un `import` — son value objects normales de `ddd-lib`.
 </details>
 
 <details>
-<summary><b>Is it production-ready?</b></summary>
+<summary><b>¿Está listo para producción?</b></summary>
 
-Yes, with exact versions pinned on both this and `ddd-lib`.
+Sí, con versiones exactas clavadas tanto aquí como en `ddd-lib`.
 
-681 tests here, and `ddd-lib@4.0.0` is the first release of the foundation with a real suite on the classes this package extends — 1017 tests, 98.6% coverage, reached by writing specs that surfaced 34 defects. This package's own suite was re-run against `4.0.0` before its peer range was widened.
+681 pruebas en este paquete, y `ddd-lib@4.0.0` es la primera versión del cimiento con una batería real sobre las clases que este paquete extiende — 1017 pruebas, 98,6 % de cobertura, alcanzadas escribiendo specs que destaparon 34 defectos. La batería propia de este paquete se volvió a ejecutar contra la `4.0.0` antes de ampliar su rango par.
 
-What remains is API churn rather than correctness risk: `ddd-lib` 4.0.0 moved behaviour in eight places the compiler cannot see. Pin exactly and judge the stability promise at its `4.1.0`.
+Lo que queda es cambio de API y no riesgo de corrección: `ddd-lib` 4.0.0 movió comportamiento en ocho sitios que el compilador no ve. Clava exacto y juzga la promesa de estabilidad en su `4.1.0`.
 </details>
 
 <details>
-<summary><b>Which NestJS and Node versions?</b></summary>
+<summary><b>¿Qué versiones de NestJS y de Node?</b></summary>
 
-NestJS 10 or 11 declared, Node `>=20.11`. Only NestJS 11 is exercised in CI.
+NestJS 10 u 11 declaradas, Node `>=20.11`. En CI sólo se ejercita NestJS 11.
 </details>
 
-## Contributing
+## Colaborar
 
-Concrete, and each verifiable in minutes:
+Concreto, y cada punto verificable en minutos:
 
-1. **A document strategy for a country you know.** `DocumentValidatorRegistry.registerStrategy()` is the extension point and six strategies already show the shape. Rules written by someone who actually lives with the format beat rules written from a spec.
-2. **Fix `Result`'s own error message.** `getValue()` on a failed result says _"Use errorValue instead"_, but the method is `getError()`. One line, in `libs/ddd-valueobjects/src/core/result.ts`.
-3. **Unify `create()`.** `Email` and `UUID` return a `Result` while the other ten throw. Pick one — it is breaking, so it needs a major and a migration note.
-4. **Document `Description` and `Url`.** Both have the richest option-driven APIs here and neither appears in this README.
+1. **Una estrategia de documento para un país que conozcas.** `DocumentValidatorRegistry.registerStrategy()` es el punto de extensión y seis estrategias ya enseñan la forma. Las reglas escritas por quien convive con el formato le ganan a las escritas desde una especificación.
+2. **Arregla el mensaje de error del propio `Result`.** `getValue()` sobre un resultado fallido dice *«Use errorValue instead»*, pero el método se llama `getError()`. Una línea, en `libs/ddd-valueobjects/src/core/result.ts`.
+3. **Unifica `create()`.** `Email` y `UUID` devuelven un `Result` mientras los otros diez lanzan. Elige uno — es incompatible, así que necesita una versión mayor y una nota de migración.
+4. **Documenta `Description` y `Url`.** Son las dos APIs más ricas en opciones de todo el paquete y ninguna aparece en este README.
 
-Before opening a PR:
+Antes de abrir un PR:
 
 ```bash
 npm run lint && npm test
 ```
 
-Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
+Los commits siguen [Conventional Commits](https://www.conventionalcommits.org/).
 
-## Building and publishing
+## Construir y publicar
 
-`npm run build` uses `nest build`, which bundles with webpack and **emits no declarations** — not publishable. `npm run build:lib` compiles with `tsc` and derives the published manifest, and the package is published from `dist/libs/ddd-valueobjects` so subpath imports resolve without an `exports` map.
+`npm run build` usa `nest build`, que empaqueta con webpack y **no emite declaraciones** — no es publicable. `npm run build:lib` compila con `tsc` y deriva el manifiesto publicado, y el paquete se publica desde `dist/libs/ddd-valueobjects` para que las importaciones por subruta resuelvan sin un mapa de `exports`.
 
 > [!TIP]
-> **[The CLI's full guide →](https://github.com/nestjslatam/ddd-cli/blob/main/docs/GUIDE.md)** — every command and flag, walked through by building a complete domain from nothing into ten type-checking files. Worth reading even if you never install the CLI: it is the clearest write-up of this library's idiom anywhere, because every claim in it was produced by running the tool.
+> **[La guía completa del CLI →](https://github.com/nestjslatam/ddd-cli/blob/main/docs/GUIDE.md)** — cada comando y cada opción, recorridos construyendo un dominio completo desde cero hasta diez ficheros que compilan. Vale la pena aunque nunca instales el CLI: es la explicación más clara del idioma de esta librería que existe, porque cada afirmación se produjo ejecutando la herramienta.
 
-## Who is behind this
+## Quiénes están detrás
 
-Built and maintained by **[BeyondNet Tech](https://beyondnet.info/)** with the [NestJS Latam](https://nestjslatam.dev/) community.
+Construido y mantenido por **[BeyondNet Tech](https://beyondnet.info/)** junto a la comunidad [NestJS Latam](https://nestjslatam.dev/).
 
-- **[Evolith](https://github.com/beyondnetcode/evolith_arch32)** — executable architecture governance: a CLI, MCP server and REST API that check a repository against Rego/OPA rules, reporting a rule they could not evaluate as a failure rather than a silent pass.
-- **[Shell.ddd](https://github.com/beyondnetcode/Shell.ddd)** — the .NET counterpart of `ddd-lib`.
+- **[Evolith](https://github.com/beyondnetcode/evolith_arch32)** — gobierno de arquitectura ejecutable: un CLI, un servidor MCP y una API REST que comprueban un repositorio contra reglas Rego/OPA, e informan de una regla que no pudieron evaluar como un fallo en lugar de dejarla pasar en silencio.
+- **[Shell.ddd](https://github.com/beyondnetcode/Shell.ddd)** — la contraparte .NET de `ddd-lib`.
 
-## License
+## Licencia
 
-MIT — see [LICENSE](LICENSE).
+MIT — ver [LICENSE](LICENSE).
 
 ---
 
 <div align="center">
 
-**Powered by [BeyondNetCode](https://beyondnet.info/)**
+**Impulsado por [BeyondNetCode](https://beyondnet.info/)**
 
-[Website](https://beyondnet.info/) · [GitHub](https://github.com/beyondnetcode) · [NestJS Latam](https://nestjslatam.dev/)
+[Web](https://beyondnet.info/) · [GitHub](https://github.com/beyondnetcode) · [NestJS Latam](https://nestjslatam.dev/)
 
 </div>
