@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.3.0 (2026-08-29)
+
+### Accepts `@nestjslatam/ddd-lib` 4.x
+
+The peer range becomes `^2.0.0 || ^3.0.0 || ^4.0.0`.
+
+**Verified rather than assumed**, and before `ddd-lib@4.0.0` was published rather than after: the 4.0.0 tarball was packed locally, installed into this repository, and the full suite re-run — **32 suites, 681 tests**, all passing.
+
+4.0.0 changes observable behaviour in eight places, none of which the compiler catches, so the range was widened only once the suite had actually run against it. The changes that could have reached this package — `getCopy()`/`clone()` returning a real copy, `StringValueObject` options finally taking effect, `IdValueObject` enforcing its invariant on every path — touch bases these value objects extend, which is exactly why this was checked rather than reasoned about.
+
 ## 1.2.0 (2026-08-28)
 
 ### `@nestjslatam/ddd-lib` is a peer dependency now
