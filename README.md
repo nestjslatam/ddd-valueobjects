@@ -92,7 +92,7 @@ The strategy carries its own `type`, so registering it replaces the built-in rul
 Node `>=20.11`, and **`@nestjslatam/ddd-lib` as a peer** — you install it yourself:
 
 ```
-@nestjslatam/ddd-lib  ^2.0.0 || ^3.0.0
+@nestjslatam/ddd-lib  ^2.0.0 || ^3.0.0 || ^4.0.0
 @nestjs/common        ^10.0.0 || ^11.0.0
 @nestjs/core          ^10.0.0 || ^11.0.0
 reflect-metadata      ^0.1.13 || ^0.2.0
@@ -129,7 +129,7 @@ They pass on a clean checkout, and the release pipeline goes further: it packs t
 <details>
 <summary><b>Does it work with the current <code>ddd-lib</code>?</b></summary>
 
-Yes, from `1.2.0`. The peer range is `^2.0.0 || ^3.0.0`, and the full 681-test suite was re-run against `ddd-lib@3.0.0` before that range was widened. On `1.1.0` or earlier, see the warning in [Requirements](#requirements) — you will silently get two copies of the library.
+Yes. The peer range is `^2.0.0 || ^3.0.0 || ^4.0.0`, and the full 681-test suite was re-run against each new major **before** the range was widened — for `4.0.0` that meant packing its tarball locally and testing against it before it was published. On `1.1.0` or earlier, see the warning in [Requirements](#requirements) — you will silently get two copies of the library.
 </details>
 
 <details>
@@ -153,7 +153,11 @@ For `Email`, mostly the tests. The ones that earn their keep are the ones with r
 <details>
 <summary><b>Is it production-ready?</b></summary>
 
-It is more thoroughly tested than its siblings — 681 tests — but it sits on `ddd-lib`, whose API is explicitly unstable. Pin exact versions of both.
+Yes, with exact versions pinned on both this and `ddd-lib`.
+
+681 tests here, and `ddd-lib@4.0.0` is the first release of the foundation with a real suite on the classes this package extends — 1017 tests, 98.6% coverage, reached by writing specs that surfaced 34 defects. This package's own suite was re-run against `4.0.0` before its peer range was widened.
+
+What remains is API churn rather than correctness risk: `ddd-lib` 4.0.0 moved behaviour in eight places the compiler cannot see. Pin exactly and judge the stability promise at its `4.1.0`.
 </details>
 
 <details>
